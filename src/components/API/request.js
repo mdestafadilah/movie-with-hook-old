@@ -11,7 +11,7 @@ const queryPopularMovies = (page) => {
 
 const queryPopularSeries = (page) => {
   return (
-    "https://api.themoviedb.org/3/movie/popular?api_key=" +
+    "https://api.themoviedb.org/3/tv/popular?api_key=" +
     apiKey +
     "&page=" +
     page
@@ -57,14 +57,14 @@ const queries = (type, query, page) => {
   switch (type) {
     case "LIST":
       switch (query) {
-        case "POPULAR_MOVIE":
+        case "POPULAR_MOVIES":
           return queryPopularMovies(page);
         case "POPULAR_SERIES":
           return queryPopularSeries(page);
         case "FAMILY":
           return queryFamily(page);
         case "DOCUMENTARY":
-          return querydocumentary(page);
+          return queryDocumentary(page);
         default:
       }
       break;
@@ -89,7 +89,7 @@ const request = (type, query, page, callbackOk, callbackError) => {
 };
 
 const poster = (url, size) => {
-  return "https://image.tmbdb.org/t/p/w" + size + url;
+  return "https://image.tmdb.org/t/p/w" + size + url;
 };
 
 export default { request, poster };
