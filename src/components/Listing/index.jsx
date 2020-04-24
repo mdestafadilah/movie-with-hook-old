@@ -68,7 +68,7 @@ export default class index extends Component {
 
   render() {
     const listing = this.props.slide ? (
-      <SlideList list={this.state.list} more={this.more} />
+      <SlideList list={this.state.list} query={this.props.query} />
     ) : (
       <BoxList list={this.state.list} more={this.more} />
     );
