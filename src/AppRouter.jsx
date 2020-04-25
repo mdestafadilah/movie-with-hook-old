@@ -5,6 +5,7 @@ import Home from "./components/Pages/Home";
 import Search from "./components/Pages/Search";
 import ViewMovie from "./components/Pages/ViewMovie";
 import Error404 from "./components/Pages/Error404";
+import ConnError from "./components/ConnError";
 
 const AppRouter = () => {
   return (
@@ -14,6 +15,7 @@ const AppRouter = () => {
           <FineRoute path="/" component={Home} exact />
           <FineRoute path="/search" component={Search} exact />
           <FineRoute path="/movie/:id" component={ViewMovie} exact />
+          <FineRoute path="/lost" component={ConnError} exact />
           <FineRoute path="*" component={Error404} />
         </Switch>
       </Template>

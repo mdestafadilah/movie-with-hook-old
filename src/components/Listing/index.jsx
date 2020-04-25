@@ -1,35 +1,35 @@
 import React, { Component } from "react";
+import { Link, withRouter } from "react-router-dom";
 import SlideList from "./SlideList";
 import BoxList from "./BoxList";
 import Loading from "../Loading/Loading";
-import Error from "../Error";
 import API from "../API/request";
 import "./Listing.css";
 
-export default class index extends Component {
+class Listing extends Component {
   state = {
     list: [],
-    message: "",
   };
   page = 0;
   showedAll = false;
   loading = false;
+  query = this.props.query;
 
   loaded = (data) => {
-    this.endLoading();
-    const formatedData = this.formatFilm(data.results);
-    this.setState({ list: [...this.state.list, formatedData] });
-    if (data.length === 0) this.showedAll = true;
+    this.loading = false;
+    let formatedData = data.results ? this.formatFilm(data.results) : [];
+    if (formatedData.length === 0) this.showedAll = true;
+    if (this.page > 1) formatedData = [...this.state.list, formatedData];
+    this.setState({ list: formatedData });
   };
 
   fail = (error) => {
-    this.endLoading();
-    if (this.page === 0) this.setState({ message: <Error /> });
+    this.props.history.push("/lost");
   };
 
   more = () => {
     if (this.showedAll || this.loading) return;
-    this.startLoading();
+    this.loading = true;
     this.page++;
     API.request(
       this.props.type,
@@ -40,30 +40,29 @@ export default class index extends Component {
     );
   };
 
-  startLoading = () => {
-    this.loading = true;
-    this.setState({ message: <Loading /> });
-  };
-
-  endLoading = () => {
-    this.loading = false;
-    this.setState({ message: "" });
-  };
-
   formatFilm = (data) => {
+    if (!data) return [];
     return data.map((item, index) => {
       const backgroundImage = "url(" + API.poster(item.poster_path, 200) + ")";
       const title = item.poster_path ? "" : <p>{item.title}</p>;
       return (
-        <div className="item" key={index} style={{ backgroundImage }}>
+        <Link to={"/movie/" + item.id} key={index}>
+          <div className="item" style={{ backgroundImage }}>
+            {title}
+          </div>
           {title}
-        </div>
+        </Link>
       );
     });
   };
 
-  componentDidMount() {
-    this.more();
+  componentDidUpdate() {
+    if (this.query !== this.props.query) {
+      this.query = this.props.query;
+      this.page = 0;
+      this.showedAll = false;
+      this.more();
+    }
   }
 
   render() {
@@ -75,3 +74,5 @@ export default class index extends Component {
     return <div>{listing}</div>;
   }
 }
+
+export default withRouter(Listing);

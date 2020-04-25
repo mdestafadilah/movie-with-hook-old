@@ -38,22 +38,24 @@ const queryDocumentary = (page) => {
   );
 };
 
-const querySearch = (page) => {
-  return (
-    "https://api.themoviedb.org/3/search/movie?api_key=" +
-    apiKey +
-    "&page=" +
-    page +
-    "&query=" +
-    escape(query)
-  );
+const querySearch = (query, page) => {
+  return query
+    ? "https://api.themoviedb.org/3/search/movie?api_key=" +
+        apiKey +
+        "&page=" +
+        page +
+        "&query=" +
+        escape(query)
+    : null;
 };
 
-const queryDetail = (page) => {
-  return "https://api.themoviedb.org/3/movie/" + query + "?api_key=" + apiKey;
+const queryDetail = (query) => {
+  return query
+    ? "https://api.themoviedb.org/3/movie/" + query + "?api_key=" + apiKey
+    : null;
 };
 
-const queries = (type, query, page) => {
+const queries = (type, query, page = 1) => {
   switch (type) {
     case "LIST":
       switch (query) {
@@ -66,17 +68,22 @@ const queries = (type, query, page) => {
         case "DOCUMENTARY":
           return queryDocumentary(page);
         default:
+          return null;
       }
       break;
     case "SEARCH":
       return querySearch(query, page);
     case "DETAIL":
       return queryDetail(query);
+    default:
+      return null;
   }
 };
 
 const request = (type, query, page, callbackOk, callbackError) => {
-  fetch(queries(type, query, page))
+  const actualQuery = queries(type, query, page);
+  if (!actualQuery) return callbackOk([]);
+  fetch(actualQuery)
     .then(function (response) {
       return response.json();
     })
@@ -89,6 +96,7 @@ const request = (type, query, page, callbackOk, callbackError) => {
 };
 
 const poster = (url, size) => {
+  if (!url) return "";
   return "https://image.tmdb.org/t/p/w" + size + url;
 };
 
